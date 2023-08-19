@@ -1,8 +1,35 @@
-FROM php:8.2-fpm-alpine as php-base
+FROM php:8.2-fpm as php-base
 
 ENV TZ=Asia/Tokyo COMPOSER_ALLOW_SUPERUSER=1
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    git \
+    zip \
+    unzip \
+    vim \
+    libz-dev \
+    libpq-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libssl-dev \
+    libzip-dev \
+    && apt-get clean \
+    && pecl install redis \
+    && docker-php-ext-configure gd \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install \
+    gd \
+    exif \
+    opcache \
+    pdo \
+    pdo_mysql \
+    pdo_pgsql \
+    pgsql \
+    pcntl \
+    zip \
+    && docker-php-ext-enable redis \
+    && rm -rf /var/lib/apt/lists/*;
 
 WORKDIR /var/www/html
 
