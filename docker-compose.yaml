@@ -1,0 +1,91 @@
+version: "3.8"
+
+networks:
+  laravel_app:
+    name: laravel_app
+    driver: bridge
+
+services:
+  server:
+    build:
+      context: docker
+      dockerfile: server/server.dockerfile
+    container_name: laravel_server
+    image: mjuyelrana/laravel_server
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./src:/var/www/html:delegated
+      - ./docker/server/config/:/etc/nginx/conf.d/
+      - ./docker/server/logs/:/var/log/nginx/
+    restart: unless-stopped
+    ports:
+      - "${SERVER_EXPOSE_PORT:-8088}:${SERVER_HOST_PORT:-80}"
+    tty: true
+    depends_on:
+      - app
+    links:
+      - app
+    networks:
+      - laravel_app
+  app:
+    build:
+      context: docker
+      dockerfile: app/php.dockerfile
+    container_name: laravel_app
+    image: mjuyelrana/laravel_app
+    volumes:
+      - ./src:/var/www/html:delegated
+      - ./docker/app/logs/php.log:/var/log/fpm-php.www.log
+    restart: unless-stopped
+    ports:
+      - "${APP_EXPOSE_PORT:-9001}:${APP_HOST_PORT:-9000}"
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - laravel_app
+  mysql:
+    build:
+      context: docker
+      dockerfile: mysql/mysql.dockerfile
+    container_name: laravel_mysql
+    image: mjuyelrana/laravel_mysql
+    env_file:
+      - docker/mysql/config/mysql.env
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/data/:/var/lib/mysql
+      - ./docker/mysql/config/my.cnf:/etc/mysql/conf.d/my.cnf
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_EXPOSE_PORT:-3309}:${MYSQL_HOST_PORT:-3306}"
+    tty: true
+    networks:
+      - laravel_app
+  phpmyadmin:
+    build:
+      context: docker
+      dockerfile: phpmyadmin/phpmyadmin.dockerfile
+    container_name: laravel_phpmyadmin
+    image: mjuyelrana/laravel_phpmyadmin
+    env_file:
+      - docker/mysql/config/mysql.env
+      - docker/phpmyadmin/config/phpmyadmin.env
+    volumes:
+      - ./docker/phpmyadmin/logs/:/sessions
+    restart: unless-stopped
+    ports:
+      - "${PHPMYADMIN_EXPOSE_PORT:-8089}:${PHPMYADMIN_HOST_PORT:-80}"
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - laravel_app
+volumes:
+  mysql-data:
+    driver: local
+
+
+
+
