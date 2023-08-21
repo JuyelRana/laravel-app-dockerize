@@ -2,6 +2,9 @@ if [ ! -f "app" ]; then
     echo "Creating project..."
     composer create-project laravel/laravel .
     echo "Project created..."
+    chmod -R 777 storage/* 
+    chmod -R 777 public/*
+    chmod -R 777 bootstrap/cache
 fi
 
 if [ ! -f "vendor/autoload.php" ]; then

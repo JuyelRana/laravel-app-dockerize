@@ -43,9 +43,9 @@ RUN chown -R www-data:www-data /var/www/html
 
 COPY app/config/php.ini /usr/local/etc/php
 
-USER www-data
+USER root
 
-COPY --chown=www-data app/config/entrypoint.sh /usr/local/bin
+COPY app/config/entrypoint.sh /usr/local/bin
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
