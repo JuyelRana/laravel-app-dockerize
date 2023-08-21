@@ -1,3 +1,9 @@
+if [ ! -f "app" ]; then 
+    echo "Creating project..."
+    composer create-project laravel/laravel .
+    echo "Project created..."
+fi
+
 if [ ! -f "vendor/autoload.php" ]; then
     echo "Installing composer."
     composer install --no-progress --no-interaction

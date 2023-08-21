@@ -35,6 +35,9 @@ WORKDIR /var/www/html
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Add UID '1000' to www-data
+RUN usermod -u 1000 www-data
+
 # www-data is default user for php
 RUN chown -R www-data:www-data /var/www/html
 

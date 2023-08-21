@@ -39,7 +39,7 @@ services:
       - ./docker/app/logs/php.log:/var/log/fpm-php.www.log
     restart: unless-stopped
     ports:
-      - "${APP_EXPOSE_PORT:-9001}:${APP_HOST_PORT:-9000}"
+      - "${APP_EXPOSE_PORT:-9011}:${APP_HOST_PORT:-9000}"
     tty: true
     depends_on:
       - mysql
